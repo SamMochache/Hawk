@@ -1,52 +1,185 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
 import { Layout } from './components/Layout';
+
 import { Login } from './pages/Login';
+
 import { Dashboard } from './pages/student/Dashboard';
 import { CourseDetail } from './pages/student/CourseDetail';
 import { LessonView } from './pages/student/LessonView';
 import { Leaderboard } from './pages/student/Leaderboard';
+
 import { ParentDashboard } from './pages/parent/Dashboard';
 import { ChildProgress } from './pages/parent/ChildProgress';
 import { Reports } from './pages/parent/Reports';
 import { Notifications } from './pages/parent/Notifications';
+
+import { InstructorDashboard } from './pages/instructor/Dashboard';
+import { AdminDashboard } from './pages/admin/Dashboard';
+
+import { StudentsPage } from './pages/admin/Students';
+import { InstructorsPage } from './pages/admin/Instructors';
+import { ClassesPage } from './pages/admin/Classes';
+import { ReportsPage } from './pages/admin/Reports';
+import { BillingPage } from './pages/admin/Billing';
+import { SettingsPage } from './pages/admin/Settings';
+
+import { LiveClassMonitor } from './pages/instructor/LiveClass';
+import { StudentDetail } from './pages/instructor/StudentDetail';
+import { ProjectGrading } from './pages/instructor/ProjectGrading';
+import { Analytics } from './pages/instructor/Analytics';
+
+const Placeholder = ({ title }: { title: string }) => (
+  <div className="p-6">
+    <div className="bg-white rounded-2xl border border-neutral-200 p-6">
+      <h1 className="text-2xl font-bold mb-2">{title}</h1>
+
+      <p className="text-neutral-600">
+        Module ready for backend integration.
+      </p>
+    </div>
+  </div>
+);
+
+const ProtectedRoute = ({
+  children,
+  allowedRoles,
+}: {
+  children: React.ReactNode;
+  allowedRoles: string[];
+}) => {
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!allowedRoles.includes(role || '')) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* Immersive Routes (No Layout) */}
-        <Route path="/student/lesson/:id" element={<LessonView />} />
+        <Route path="/login" element={<Login />} />
 
-        {/* Student Routes */}
-        <Route path="/student" element={<Layout />}>
+        {/* LESSON VIEW */}
+        <Route
+          path="/student/lesson/:id"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <LessonView />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* STUDENT */}
+        <Route
+          path="/student"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
+
           <Route
             path="courses"
-            element={<div className="p-4">Courses Page (Coming Soon)</div>} />
-          
+            element={<Placeholder title="Courses" />}
+          />
+
           <Route path="courses/:id" element={<CourseDetail />} />
+
           <Route
             path="projects"
-            element={<div className="p-4">Projects Page (Coming Soon)</div>} />
-          
+            element={<Placeholder title="Projects" />}
+          />
+
           <Route path="leaderboard" element={<Leaderboard />} />
         </Route>
 
-        {/* Parent Routes */}
-        <Route path="/parent" element={<Layout />}>
+        {/* PARENT */}
+        <Route
+          path="/parent"
+          element={
+            <ProtectedRoute allowedRoles={['parent']}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<ParentDashboard />} />
           <Route path="progress" element={<ChildProgress />} />
           <Route path="reports" element={<Reports />} />
           <Route path="notifications" element={<Notifications />} />
         </Route>
 
-        {/* Fallback */}
+        {/* INSTRUCTOR */}
+        <Route
+          path="/instructor/live/:classId"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+              <LiveClassMonitor />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/instructor"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<InstructorDashboard />} />
+
+          <Route
+            path="classes"
+            element={<Placeholder title="Classes" />}
+          />
+
+          <Route path="grading" element={<ProjectGrading />} />
+
+          <Route path="analytics" element={<Analytics />} />
+
+          <Route path="students/:id" element={<StudentDetail />} />
+        </Route>
+
+        {/* ADMIN */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+
+          <Route path="students" element={<StudentsPage />} />
+
+          <Route path="instructors" element={<InstructorsPage />} />
+
+          <Route path="classes" element={<ClassesPage />} />
+
+          <Route path="reports" element={<ReportsPage />} />
+
+          <Route path="billing" element={<BillingPage />} />
+
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
+
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-    </BrowserRouter>);
-
+    </BrowserRouter>
+  );
 }

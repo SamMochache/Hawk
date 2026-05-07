@@ -46,8 +46,10 @@ export function Login() {
       if (role === 'student' || role === 'parent') {
         navigate(`/${role}`);
       } else {
-        // Instructor / Admin not yet built
-        navigate('/student');
+        // Instructor / A
+        localStorage.setItem('token', 'demo-token');
+        localStorage.setItem('role', role);
+        navigate(`/${role}`);
       }
     }, 700);
   };
