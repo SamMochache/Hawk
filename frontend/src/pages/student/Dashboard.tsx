@@ -26,37 +26,15 @@ import {
   PolarRadiusAxis,
   Radar } from
 'recharts';
-const COURSES = [
-{
-  id: 1,
-  title: 'Intro to Python',
-  category: 'coding',
-  progress: 65,
-  nextLesson: 'Loops & Iteration',
-  timeLeft: '45m',
-  icon: Code,
-  color: 'category-coding'
-},
-{
-  id: 2,
-  title: 'Arduino Basics',
-  category: 'robotics',
-  progress: 30,
-  nextLesson: 'LED Blink Circuit',
-  timeLeft: '1h 20m',
-  icon: Cpu,
-  color: 'category-robotics'
-},
-{
-  id: 3,
-  title: 'Machine Learning 101',
-  category: 'ai',
-  progress: 10,
-  nextLesson: 'What is a Model?',
-  timeLeft: '2h',
-  icon: Bot,
-  color: 'category-ai'
-}];
+import { useCourses } from '../../hooks/useCourses';
+import { useEnrollments } from '../../hooks/useEnrollments';
+import { useAuth } from '../../hooks/useAuth';
+
+const CATEGORY_ICONS = {
+  coding: Code,
+  robotics: Cpu,
+  ai: Bot,
+};
 
 const SKILLS_DATA = [
 {
@@ -86,13 +64,36 @@ const SKILLS_DATA = [
 }];
 
 export function Dashboard() {
+  const { user } = useAuth();
+  const { data: courses = [], isLoading: coursesLoading } = useCourses();
+  const { data: enrollments = [], isLoading: enrollmentsLoading } = useEnrollments();
+
+  // Combine courses with enrollment progress
+  const enrolledCourses = courses
+    .map(course => {
+      const enrollment = enrollments.find(e => e.course === course.id && e.student === user?.id);
+      const Icon = CATEGORY_ICONS[course.category as keyof typeof CATEGORY_ICONS] || Code;
+      return {
+        ...course,
+        progress: enrollment?.progress || 0,
+        icon: Icon,
+        color: `category-${course.category}`,
+        nextLesson: 'Continue Learning', // This would come from lessons API
+        timeLeft: '45m', // This would be calculated
+      };
+    })
+    .filter(course => enrollments.some(e => e.course === course.id && e.student === user?.id));
+
+  if (coursesLoading || enrollmentsLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="space-y-8 pb-8">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">
-            Good morning, Brian.
+            Good morning, {user?.first_name || 'Student'}.
           </h1>
           <p className="text-neutral-500 mt-1">
             You're on a 4-day streak. Keep it up!
@@ -125,7 +126,7 @@ export function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {COURSES.map((course, i) =>
+          {enrolledCourses.map((course, i) =>
           <motion.div
             key={course.id}
             initial={{

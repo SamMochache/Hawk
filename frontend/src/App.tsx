@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './hooks/useAuth';
 
 import { Layout } from './components/Layout';
 import { PlaceholderPage } from './components/ui';
@@ -38,14 +39,17 @@ const ProtectedRoute = ({
   children: React.ReactNode;
   allowedRoles: string[];
 }) => {
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
+  const { isAuthenticated, user, isLoading } = useAuth();
 
-  if (!token) {
+  if (isLoading) {
+    return <div>Loading...</div>; // Or a proper loading component
+  }
+
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!allowedRoles.includes(role || '')) {
+  if (!allowedRoles.includes(user.role)) {
     return <Navigate to="/login" replace />;
   }
 
@@ -53,10 +57,35 @@ const ProtectedRoute = ({
 };
 
 export function App() {
+  const { isAuthenticated, setLoading } = useAuth();
+
+  useEffect(() => {
+    // Check if user is already authenticated on app start
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('auth-storage');
+      if (token) {
+        try {
+          // Parse the persisted state
+          const authData = JSON.parse(token);
+          if (authData.state?.accessToken && authData.state?.user) {
+            // User is authenticated, Zustand will handle the state
+            setLoading(false);
+            return;
+          }
+        } catch (error) {
+          console.error('Error parsing auth data:', error);
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
+  }, [setLoading]);
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to={isAuthenticated ? "/student" : "/login"} replace />} />
 
         <Route path="/login" element={<Login />} />
 

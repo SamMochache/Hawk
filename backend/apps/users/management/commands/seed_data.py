@@ -30,7 +30,7 @@ class Command(BaseCommand):
             }
         )
         if admin.has_usable_password() is False:
-            admin.set_password('AdminPass123!')
+            admin.set_password('password123')
             admin.save()
 
         instructor, _ = User.objects.get_or_create(
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             }
         )
         if not instructor.has_usable_password():
-            instructor.set_password('Instructor123!')
+            instructor.set_password('password123')
             instructor.save()
 
         parent, _ = User.objects.get_or_create(
@@ -56,7 +56,7 @@ class Command(BaseCommand):
             }
         )
         if not parent.has_usable_password():
-            parent.set_password('Parent123!')
+            parent.set_password('password123')
             parent.save()
 
         student, _ = User.objects.get_or_create(
@@ -70,7 +70,7 @@ class Command(BaseCommand):
             }
         )
         if not student.has_usable_password():
-            student.set_password('Student123!')
+            student.set_password('password123')
             student.save()
 
         courses = []

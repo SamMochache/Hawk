@@ -18,7 +18,10 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
     "recharts": "^2.12.7",
-    "tailwind-merge": "latest"
+    "tailwind-merge": "latest",
+    "@tanstack/react-query": "^5.5.0",
+    "axios": "^1.7.6",
+    "zustand": "^4.4.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.18",

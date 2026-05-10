@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { GraduationCap, Users, BookOpen, Building2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { authAPI } from '../api/auth';
+import { useAuth } from '../hooks/useAuth';
 import {
   Button,
   Card,
@@ -13,40 +16,70 @@ import {
   Label,
   cn } from
 '../components/ui';
+
 const ROLES = [
-{
-  id: 'student',
-  label: 'Student',
-  icon: GraduationCap
-},
-{
-  id: 'parent',
-  label: 'Parent',
-  icon: Users
-},
-{
-  id: 'instructor',
-  label: 'Instructor',
-  icon: BookOpen
-},
-{
-  id: 'admin',
-  label: 'Admin',
-  icon: Building2
-}];
+  {
+    id: 'student',
+    label: 'Student',
+    icon: GraduationCap
+  },
+  {
+    id: 'parent',
+    label: 'Parent',
+    icon: Users
+  },
+  {
+    id: 'instructor',
+    label: 'Instructor',
+    icon: BookOpen
+  },
+  {
+    id: 'admin',
+    label: 'Admin',
+    icon: Building2
+  }
+];
 
 export function Login() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState('student');
+
+  const loginMutation = useMutation({
+    mutationFn: authAPI.login,
+    onSuccess: (data) => {
+      login(data.user, data.access, data.refresh);
+      navigate(`/${data.user.role}`);
+    },
+    onError: (error: any) => {
+      console.error('Login failed:', error);
+      // Handle error (show toast, etc.)
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      localStorage.setItem('token', 'demo-token');
-      localStorage.setItem('role', role);
-      navigate(`/${role}`);
-    }, 700);
+    loginMutation.mutate({ email, password });
+  };
+
+  const handleRoleChange = (newRole: string) => {
+    setRole(newRole);
+    // Pre-fill demo credentials
+    if (newRole === 'student') {
+      setEmail('student@tinkacode.com');
+      setPassword('password123');
+    } else if (newRole === 'parent') {
+      setEmail('parent@tinkacode.com');
+      setPassword('password123');
+    } else if (newRole === 'instructor') {
+      setEmail('instructor@tinkacode.com');
+      setPassword('password123');
+    } else if (newRole === 'admin') {
+      setEmail('admin@tinkacode.com');
+      setPassword('password123');
+    }
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-50 p-4">
@@ -91,7 +124,7 @@ export function Login() {
                   <button
                     key={r.id}
                     type="button"
-                    onClick={() => setRole(r.id)}
+                    onClick={() => handleRoleChange(r.id)}
                     className={cn(
                       'flex flex-col items-center gap-1 py-2 rounded-md text-xs font-medium transition-all',
                       active ?
@@ -114,9 +147,10 @@ export function Login() {
                   type="email"
                   placeholder="you@example.com"
                   required
-                  defaultValue={`${role}@tinkacode.com`}
-                  key={role} />
-                
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -124,7 +158,7 @@ export function Login() {
                   <a
                     href="#"
                     className="text-xs font-medium text-neutral-500 hover:text-neutral-900">
-                    
+
                     Forgot password?
                   </a>
                 </div>
@@ -132,23 +166,17 @@ export function Login() {
                   id="password"
                   type="password"
                   required
-                  defaultValue="password123" />
-                
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+
               </div>
               <Button
                 type="submit"
                 className="w-full mt-2"
-                disabled={isLoading}>
-                
-                {isLoading ?
-                'Signing in...' :
-                `Sign in as ${ROLES.find((r) => r.id === role)?.label}`}
-              </Button>
-            </form>
+                disabled={loginMutation.isPending}>
 
-            {(role === 'instructor' || role === 'admin') &&
-            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-3 mt-4">
-                Instructor and Admin portals are under development. Some features may be limited.
+                {loginMutation.isPending ?
               </p>
             }
           </CardContent>
