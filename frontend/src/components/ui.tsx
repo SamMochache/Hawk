@@ -241,3 +241,47 @@ export function ProgressRing({
     </div>);
 
 }
+
+// --- PlaceholderPage ---
+export function PlaceholderPage({ title, description }: { title: string; description?: string }) {
+  return (
+    <div className="p-6">
+      <div className="bg-white rounded-2xl border border-neutral-200 p-12 text-center">
+        <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-8 h-8 bg-neutral-300 rounded"></div>
+        </div>
+        <h1 className="text-2xl font-bold mb-2 text-neutral-950">{title}</h1>
+        <p className="text-neutral-600 max-w-md mx-auto">
+          {description || "This feature is currently under development and will be available soon."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// --- EmptyState ---
+export function EmptyState({ icon: Icon, title, description, action }: { icon?: any; title: string; description: string; action?: React.ReactNode }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
+      {Icon && (
+        <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center mb-4">
+          <Icon size={24} className="text-neutral-400" />
+        </div>
+      )}
+      <h3 className="text-lg font-semibold text-neutral-950 mb-2">{title}</h3>
+      <p className="text-neutral-600 mb-6 max-w-sm">{description}</p>
+      {action}
+    </div>
+  );
+}
+
+// --- Loading ---
+export function Loading({ size = 'md', text }: { size?: 'sm' | 'md' | 'lg'; text?: string }) {
+  const sizes = { sm: 'w-4 h-4', md: 'w-6 h-6', lg: 'w-8 h-8' };
+  return (
+    <div className="flex flex-col items-center justify-center py-8">
+      <div className={cn('border-2 border-neutral-200 border-t-neutral-900 rounded-full animate-spin', sizes[size])}></div>
+      {text && <p className="text-sm text-neutral-600 mt-2">{text}</p>}
+    </div>
+  );
+}

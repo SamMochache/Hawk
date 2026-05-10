@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { Layout } from './components/Layout';
+import { PlaceholderPage } from './components/ui';
 
 import { Login } from './pages/Login';
 
@@ -29,18 +30,6 @@ import { LiveClassMonitor } from './pages/instructor/LiveClass';
 import { StudentDetail } from './pages/instructor/StudentDetail';
 import { ProjectGrading } from './pages/instructor/ProjectGrading';
 import { Analytics } from './pages/instructor/Analytics';
-
-const Placeholder = ({ title }: { title: string }) => (
-  <div className="p-6">
-    <div className="bg-white rounded-2xl border border-neutral-200 p-6">
-      <h1 className="text-2xl font-bold mb-2">{title}</h1>
-
-      <p className="text-neutral-600">
-        Module ready for backend integration.
-      </p>
-    </div>
-  </div>
-);
 
 const ProtectedRoute = ({
   children,
@@ -94,14 +83,14 @@ export function App() {
 
           <Route
             path="courses"
-            element={<Placeholder title="Courses" />}
+            element={<PlaceholderPage title="Courses" />}
           />
 
           <Route path="courses/:id" element={<CourseDetail />} />
 
           <Route
             path="projects"
-            element={<Placeholder title="Projects" />}
+            element={<PlaceholderPage title="Projects" />}
           />
 
           <Route path="leaderboard" element={<Leaderboard />} />
@@ -144,7 +133,7 @@ export function App() {
 
           <Route
             path="classes"
-            element={<Placeholder title="Classes" />}
+            element={<PlaceholderPage title="Classes" />}
           />
 
           <Route path="grading" element={<ProjectGrading />} />
