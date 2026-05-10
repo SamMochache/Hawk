@@ -1,0 +1,69 @@
+version: '3.9'
+
+services:
+  backend:
+    build: .
+    command: gunicorn backend_project.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    env_file:
+      - .env
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - tinkacode-network
+
+  celery:
+    build: .
+    command: celery -A backend_project worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - tinkacode-network
+
+  celery-beat:
+    build: .
+    command: celery -A backend_project beat --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - tinkacode-network
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: tinkacode
+      POSTGRES_USER: tinkacode
+      POSTGRES_PASSWORD: tinkacode
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - tinkacode-network
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - '6379:6379'
+    networks:
+      - tinkacode-network
+
+networks:
+  tinkacode-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
