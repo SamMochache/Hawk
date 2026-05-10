@@ -43,14 +43,9 @@ export function Login() {
     e.preventDefault();
     setIsLoading(true);
     setTimeout(() => {
-      if (role === 'student' || role === 'parent') {
-        navigate(`/${role}`);
-      } else {
-        // Instructor / A
-        localStorage.setItem('token', 'demo-token');
-        localStorage.setItem('role', role);
-        navigate(`/${role}`);
-      }
+      localStorage.setItem('token', 'demo-token');
+      localStorage.setItem('role', role);
+      navigate(`/${role}`);
     }, 700);
   };
   return (
@@ -153,8 +148,7 @@ export function Login() {
 
             {(role === 'instructor' || role === 'admin') &&
             <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-3 mt-4">
-                {ROLES.find((r) => r.id === role)?.label} portal coming in a
-                future phase. You'll be redirected to the Student view.
+                Instructor and Admin portals are under development. Some features may be limited.
               </p>
             }
           </CardContent>

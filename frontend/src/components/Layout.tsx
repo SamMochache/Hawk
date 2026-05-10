@@ -12,7 +12,10 @@ import {
   LogOut,
   TrendingUp,
   FileText,
-  Users } from
+  Users,
+  Settings,
+  DollarSign,
+  UserCheck } from
 'lucide-react';
 import { cn } from './ui';
 const NAV_CONFIG: Record<
@@ -65,6 +68,65 @@ const NAV_CONFIG: Record<
     label: 'Notifications',
     icon: Bell,
     path: '/parent/notifications'
+  }],
+
+  instructor: [
+  {
+    label: 'Dashboard',
+    icon: Home,
+    path: '/instructor'
+  },
+  {
+    label: 'Classes',
+    icon: BookOpen,
+    path: '/instructor/classes'
+  },
+  {
+    label: 'Grading',
+    icon: FileText,
+    path: '/instructor/grading'
+  },
+  {
+    label: 'Analytics',
+    icon: TrendingUp,
+    path: '/instructor/analytics'
+  }],
+
+  admin: [
+  {
+    label: 'Dashboard',
+    icon: Home,
+    path: '/admin'
+  },
+  {
+    label: 'Students',
+    icon: Users,
+    path: '/admin/students'
+  },
+  {
+    label: 'Instructors',
+    icon: UserCheck,
+    path: '/admin/instructors'
+  },
+  {
+    label: 'Classes',
+    icon: BookOpen,
+    path: '/admin/classes'
+  },
+  {
+    label: 'Reports',
+    icon: FileText,
+    path: '/admin/reports'
+  },
+  {
+    label: 'Billing',
+    icon: DollarSign,
+    path: '/admin/billing'
+  },
+  {
+    label: 'Settings',
+    icon: Settings,
+    path: '/admin/settings'
   }]
 
 };
@@ -88,6 +150,18 @@ const USER_PROFILES: Record<
     role: 'parent',
     avatar: 'https://i.pravatar.cc/150?u=grace',
     subtitle: 'Parent Account'
+  },
+  instructor: {
+    name: 'Dr. Sarah Johnson',
+    role: 'instructor',
+    avatar: 'https://i.pravatar.cc/150?u=sarah',
+    subtitle: 'Lead Instructor'
+  },
+  admin: {
+    name: 'Michael Chen',
+    role: 'admin',
+    avatar: 'https://i.pravatar.cc/150?u=michael',
+    subtitle: 'System Administrator'
   }
 };
 export function Layout() {
