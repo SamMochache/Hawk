@@ -177,6 +177,14 @@ export function Login() {
                 disabled={loginMutation.isPending}>
 
                 {loginMutation.isPending ?
+                'Signing in...' :
+                `Sign in as ${ROLES.find((r) => r.id === role)?.label}`}
+              </Button>
+            </form>
+
+            {(role === 'instructor' || role === 'admin') &&
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-3 mt-4">
+                Instructor and Admin portals are under development. Some features may be limited.
               </p>
             }
           </CardContent>

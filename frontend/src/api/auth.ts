@@ -35,15 +35,23 @@ export interface RefreshTokenResponse {
 }
 
 export const authAPI = {
-  login: (data: LoginRequest) =>
-    client.post<LoginResponse>('/auth/login/', data),
+  login: async (data: LoginRequest): Promise<LoginResponse> => {
+    const response = await client.post<LoginResponse>('/auth/login/', data);
+    return response.data;
+  },
 
-  refresh: (data: RefreshTokenRequest) =>
-    client.post<RefreshTokenResponse>('/auth/refresh/', data),
+  refresh: async (data: RefreshTokenRequest): Promise<RefreshTokenResponse> => {
+    const response = await client.post<RefreshTokenResponse>('/auth/refresh/', data);
+    return response.data;
+  },
 
-  logout: (data: { refresh: string }) =>
-    client.post<{ detail: string }>('/auth/logout/', data),
+  logout: async (data: { refresh: string }): Promise<{ detail: string }> => {
+    const response = await client.post<{ detail: string }>('/auth/logout/', data);
+    return response.data;
+  },
 
-  getCurrentUser: () =>
-    client.get<CurrentUserResponse>('/users/me/'),
+  getCurrentUser: async (): Promise<CurrentUserResponse> => {
+    const response = await client.get<CurrentUserResponse>('/users/me/');
+    return response.data;
+  },
 };

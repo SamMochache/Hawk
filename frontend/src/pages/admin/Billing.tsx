@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { DollarSign, Download, AlertCircle, CheckCircle, Clock, X, TrendingUp } from 'lucide-react';
 import { cn } from '../../components/ui';
 
