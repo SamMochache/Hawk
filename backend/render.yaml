@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: tinkacode-backend
+    env: docker
+    region: oregon
+    dockerfilePath: Dockerfile
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn backend_project.asgi:application --bind 0.0.0.0:$PORT --workers 3 --worker-class uvicorn.workers.UvicornWorker
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: backend_project.settings
+      - key: PYTHONPATH
+        value: /app
+  - type: worker
+    name: tinkacode-celery
+    env: docker
+    region: oregon
+    dockerfilePath: Dockerfile
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A backend_project worker --loglevel=info --concurrency=2
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: backend_project.settings
+      - key: PYTHONPATH
+        value: /app

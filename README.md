@@ -84,6 +84,21 @@ src/
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 
+## Deployment
+
+### Frontend Hosting
+The frontend is already deployed on Vercel at `https://hawk-green.vercel.app/`.
+
+### Backend Hosting
+The Django backend can be deployed on Render using the instructions in `backend/README.md`.
+
+Set the frontend environment variables in Vercel after backend deployment:
+
+```bash
+VITE_API_URL=https://your-backend.onrender.com/api/v1
+VITE_WS_URL=wss://your-backend.onrender.com
+```
+
 ## Contributing
 
 1. Fork the repository

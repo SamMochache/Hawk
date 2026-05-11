@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -71,8 +72,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend_project.wsgi.application'
 ASGI_APPLICATION = 'backend_project.asgi.application'
 
+DATABASE_URL = os.getenv('DATABASE_URL')
 DATABASES = {
-    'default': {
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=int(os.getenv('DJANGO_DB_CONN_MAX_AGE', '600')),
+        conn_health_checks=True,
+    ) if DATABASE_URL else {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_DB', 'tinkacode'),
         'USER': os.getenv('POSTGRES_USER', 'tinkacode'),
@@ -101,6 +107,11 @@ AUTH_USER_MODEL = 'users.User'
 
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5176').split(',') if origin.strip()]
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if origin.strip()]
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
